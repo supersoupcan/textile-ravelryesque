@@ -10,11 +10,13 @@ A databaes/interface like raverly for textiles
     * persistent sessions  
     * mongo user models
         * basic crytopgraphy (hash, salts) 
-    * passport-local 
+    * passport-local
+    * throttle bad logins
 * RESTful API
     * CRUD for submissions
     * CRUD for accounts
     * CRUD for users
+    * Rate Limiting
 * Database
     * mongo submission model
     * mongo account model
