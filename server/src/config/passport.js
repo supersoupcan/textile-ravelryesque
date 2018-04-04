@@ -1,34 +1,33 @@
 const User = require("../models/User.js");
-const passport = require(passport);
+const passport = require('passport');
 
 const LocalStrategy = require('passport-local').Strategy;
 
-const local = new LocalStrategy((username, password, done) => {
-  User.findOne({ username })
-    .catch(err => done(err))
-    .then(user => {
-      if(!user){
-        done(null, false, { message: "Invalid Username" });
+const local = new LocalStrategy(
+  async (username, password, done) => {
+  try{
+    const user = await User.findOne({ username });
+    if(!user){
+      done(null, false, { message : "Wrong Username"});
+    }else{
+      const isMatch = await user.validPassword(password);
+      if(isMatch){
+        const userRes = user.toObject({versionKey : false});
+        delete userRes.passwordHash;
+        done(null, userRes);
       }else{
-        user.validPassword(password).catch(err => {
-          if(err){
-            done(null, false, { message: "error when validating password" });
-          }
-        }).then(res => {
-          if(!res){
-            done(null, false, { message: "Invalid Password" });
-          }else{
-            done(null, user);
-          }
-        });
+        done(null, false, { message : "Wrong Password"});
       }
-    });
+    }
+  }catch(err){
+    done(err, false, { message : "Unexpected Server Error"});
+  }
 });
 
 
 module.exports.init = function(app){
   app.use(passport.initialize());
-  app.use(passport.session);
+  app.use(passport.session());
   
   passport.serializeUser(function(user, done) {
     done(null, user._id);
@@ -39,4 +38,6 @@ module.exports.init = function(app){
   });
   
   passport.use('local', local);
+  
+  return passport;
 };

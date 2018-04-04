@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
+
 import { connect } from 'react-redux';
 
+import Page from '../components/Page';
 
-class App extends Component {
+class HomePage extends Component{
   render(){
     return(
-      <div>
-        <h1>React-Redux Boiler Plate</h1>
-      </div>
+      <Page>
+        <h3>Main Page</h3>
+      </Page>
     );
   }
 }
+
 
 const mapStateToProps = (state) => {
   return {
@@ -24,4 +27,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps,  mapDispatchToProps)(App);
+export default connect(mapStateToProps,  mapDispatchToProps)(HomePage);

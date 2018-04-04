@@ -10,33 +10,35 @@ const UserSchema = new Schema({
     unique : true
   },
   passwordHash : {
-    type : String, required : true
+    type : String, required : true 
   }
 });
 
 UserSchema.plugin(uniqueValidator);
 
-UserSchema.methods.validPassword = (password) => new Promise(
-  (resolve, reject) => {
-    bcrypt.compare(password, this.passwordHash, function(err, res){
+UserSchema.methods.setPassword = function(password){
+  return new Promise((resolve, reject) => {
+    bcrypt.hash(password, 12, (err, hash) => {
       if(err){
-        return reject;
+        reject(err);
       }
-      return resolve(res);
+      this.passwordHash = hash;
+      resolve(this);
     });
-  }
-);
+  });
+};
 
-UserSchema.virtual("password").set((value) => new Promise(
-  (resolve, reject) => {
-    bcrypt.hash(value, 12, function(err, hash){
+UserSchema.methods.validPassword = function(password){
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(password, this.passwordHash, function(err, isValid){
       if(err){
-        return reject;
+        reject(err);
       }
-      return resolve(hash);
+      resolve(isValid);
     });
-  }
-));
+  });
+};
+
 
 const User = mongoose.model("User", UserSchema);
 
