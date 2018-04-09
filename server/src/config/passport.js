@@ -30,6 +30,7 @@ module.exports.init = function(app){
   app.use(passport.session());
   
   passport.serializeUser(function(user, done) {
+    console.log('serializing user into session');
     done(null, user._id);
   });
   

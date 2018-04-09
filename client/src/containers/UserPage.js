@@ -5,19 +5,19 @@ import { apiActionCreator } from '../api';
 
 import Page from '../components/Page';
 
-class NoPageFoundPage extends Component{
+class SignInPage extends Component{
   render(){
     return(
-      <Page 
-        title="404 Not Found" 
+      <Page
+        title={this.props.auth.profile.username + "'s Profile"}
         auth={this.props.auth}
         logout={() => this.props.apiActionCreator('auth', 'logout', [])}
       >
-        <h3>No Page Found</h3>
       </Page>
     );
   }
 }
+
 
 const mapStateToProps = (state) => {
   return {
@@ -30,7 +30,10 @@ const mapDispatchToProps = (dispatch) => {
     apiActionCreator : (endpoint, operation, args) => {
       dispatch(apiActionCreator(endpoint, operation, args));
     },
+    resetErrors : () => {
+      dispatch({type : "RESET_ERRORS"});
+    }
   };
 };
 
-export default connect(mapStateToProps,  mapDispatchToProps)(NoPageFoundPage);
+export default connect(mapStateToProps,  mapDispatchToProps)(SignInPage);

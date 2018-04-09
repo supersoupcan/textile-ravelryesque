@@ -30,7 +30,14 @@ module.exports = {
             }
           }
         ]
-      },
+      },{
+        test: /\.(png|jpg|gif|ico)$/,
+        loader: 'url-loader',
+        include: path.resolve(__dirname, 'client', 'src'),
+        options: {
+          limit: 8192
+        }
+      }
     ]
   },
   plugins: [

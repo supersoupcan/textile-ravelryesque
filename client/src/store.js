@@ -12,8 +12,12 @@ export default createStore(
   }),{
     auth : {
       authenticated : null,
-      profile: null
-    }
+      profile: null,
+      pending : false,
+      messages : {
+        errors : []
+      },
+    },
   },
   applyMiddleware(thunk, promiseMiddleware(), logger)
 );

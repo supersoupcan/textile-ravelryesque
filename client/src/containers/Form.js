@@ -16,7 +16,11 @@ export default class Form extends Component{
     this.formOnChangeHandler = this.formOnChangeHandler.bind(this);
   }
   
-  async handleSubmit(e){
+  componentDidMount(){
+    this.props.resetMessages();
+  }
+  
+  handleSubmit(e){
     e.preventDefault();
     this.props.submitAction(this.state);
   }
@@ -43,7 +47,11 @@ export default class Form extends Component{
               </div>
             );
           })}
-          <input type='submit' value={this.props.submitString}></input>
+          <SubmissionManager 
+            state={this.state}
+            formInputs={this.props.formInputs}
+            submitString={this.props.submitString}
+          />
         </form>
       </div>
     );
@@ -53,17 +61,17 @@ export default class Form extends Component{
 Form.propTypes = {
   submitAction : PropTypes.func.isRequired,
   submitString : PropTypes.string,
+  resetMessages : PropTypes.func.isRequired,
+  messages : PropTypes.object,
   formInputs : PropTypes.arrayOf(PropTypes.shape({
-      name : PropTypes.string.isRequired,
-      title : PropTypes.string.isRequired,
-      type : PropTypes.string.isRequired
-    })
-  ),
+    name : PropTypes.string.isRequired,
+    title : PropTypes.string.isRequired,
+    type : PropTypes.string.isRequired
+  })),
 };
 
 const FormInput = (props) => {
   const { data, onChangeHandler, parentValue } = props;
-  
   return(
     <input 
       name={data.name}
@@ -72,5 +80,48 @@ const FormInput = (props) => {
       onChange={onChangeHandler}
       value={parentValue}
     />
+  );
+};
+
+const SubmissionManager = (props) => {
+  let errorsList = [];
+  props.formInputs.map((input, index) => {
+    const inputTarget = props.state[input.name];
+    input.validation.map((rule, index) => {
+      let legal = false;
+      switch(rule.type){
+        case "LENGTH" : {
+          legal = rule.match(inputTarget.length);
+          break;
+        }
+        case "REGEX" : {
+          legal = rule.match.test(inputTarget);
+        }
+      }
+      if(!legal){
+        errorsList.push({
+          name : input.title,
+          errMessage : rule.errMessage
+        });
+      }
+    });
+  });
+  
+  return(
+    <div>
+      <input 
+        type='submit'
+        value={props.submitString}
+        disabled={errorsList.length > 0}
+        >
+      </input>
+      {errorsList.map((error, index) => {
+        return(
+          <div key={index}>
+            {error.name +  " " + error.errMessage}
+          </div>
+        );
+      })}
+    </div>
   );
 };

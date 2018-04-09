@@ -7,21 +7,18 @@ A databaes/interface like raverly for textiles
 
 ### Server
 * Local Authorization
-    * persistent sessions  
-    * mongo user models
-        * basic crytopgraphy (hash, salts) 
-    * passport-local
+    ~~ * persistent sessions ~~
+    ~~* mongo user models~~
+       ~~ * basic crytopgraphy (bcrypt) ~~
+    ~~ * passport-local ~~
     * throttle bad logins
 * RESTful API
     * CRUD for submissions
-    * CRUD for accounts
     * CRUD for users
     * Rate Limiting
 * Database
     * mongo submission model
     * mongo account model
-    * learn CRUD for static files like PDFS and images
-        * services like amazon azure?
 
 ### Client
 * Home Page
@@ -33,4 +30,11 @@ A databaes/interface like raverly for textiles
 * Database Interface
     * Filters
 
-#### lets see how this goes
+#### Buisness 
+* find a reasonable cloud service for hosting
+* find a reasonable cloud service for serving static files
+    * ( like user PDFS and IMAGES)
+    * AWS3 (5GB free for 12 months)
+* secure a reasonable domain name 
+* build and fail quickly
+* don't worry about scaling until proven viability

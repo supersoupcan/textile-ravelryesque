@@ -6,15 +6,18 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 const bodyParser = require('body-parser');
+const flash = require('connect-flash');
+const cookieParser = require('cookie-parser');
 const configPassport = require('./config/passport');
 
-
-const env = require('./config/env'); 
-
+const env = require('./config/env');
 const api = require('./api');
 
 //CREATE//
 var app = express();
+
+//SERVE STATIC FILES//
+app.use(express.static(path.resolve(__dirname, '..', '..', 'client', 'static')));
 
 //MIDDLEWARE
 app.use(bodyParser.json());
@@ -22,9 +25,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect(env.MONGO_URL);
 
+app.use(cookieParser(env.SESSION_SECRET));
 app.use(session({
   secret: env.SESSION_SECRET,
-  cookie: { maxAge : 2628000000 },
   store: new MongoStore({
     mongooseConnection: mongoose.connection
   }),
@@ -32,10 +35,9 @@ app.use(session({
   saveUninitialized: false
 }));
 
-let passport = configPassport.init(app);
+app.use(flash());
 
-//SERVE STATIC FILES//
-app.use(express.static(path.resolve(__dirname, '..', '..', 'client', 'static')));
+let passport = configPassport.init(app);
 
 //ROUTES//
 app.use('/api', api(passport));

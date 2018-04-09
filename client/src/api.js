@@ -5,8 +5,8 @@ axios.defaults.baseURL = '/api';
 const _api = {
   auth : {
     login : (data) => axios.post('/auth/login', data),
-    logout : (data) => axios.post('/auth/logout', data),
-    check : () => axios.get("/auth")
+    logout : () => axios.post('/auth/logout'),
+    check : () => axios.get("/auth/login")
   },
   users : {
     create : (data) => axios.post("/users", data),
@@ -19,20 +19,24 @@ const _api = {
 export const apiActionCreator = (endpoint, operation, args) => {
   const _type = endpoint.toUpperCase() + "_" + operation.toUpperCase();
   const _apiCall = _api[endpoint][operation];
-  const _promise = () => {
-    return new Promise( async (resolve, reject) => {
+  const _promise = new Promise(
+    async (resolve, reject) => {
       try{
         const res = await _apiCall(...args);
         if(res.data.success){
-          resolve(res.data.payload);
+          resolve(res.data);
         }else{
-          reject(res.data.message);
+          reject(res.data);
         }
       }catch(err){
-        reject(err);
+        reject({
+          messages : {
+            errors : [err]
+          }
+        });
       }
-    });
-  };
+    }
+  );
   
   return async (dispatch) => {
     try{
@@ -43,7 +47,7 @@ export const apiActionCreator = (endpoint, operation, args) => {
     }
     catch(err){
       // A perplexing lack of exception handling for errors that the promise
-      // middleware seems practically designed to catch
+      // middleware seems conceptually designed to catch :P
       // https://github.com/pburtchaell/redux-promise-middleware/issues/75
     }
   };

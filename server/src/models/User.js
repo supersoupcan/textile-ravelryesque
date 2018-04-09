@@ -9,8 +9,25 @@ const UserSchema = new Schema({
     required : true,
     unique : true
   },
+  email : {
+    type : String,
+    required : true,
+    unique : true,
+    validate : {
+      validator : (emailInput) => {
+        const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+        return emailRegex.test(emailInput);
+      },
+      message : "Not a valid email address" 
+    }
+  },
   passwordHash : {
-    type : String, required : true 
+    type : String, 
+    required : true 
+  },
+  createdAt : {
+    type : Date,
+    default : Date.nowi
   }
 });
 
