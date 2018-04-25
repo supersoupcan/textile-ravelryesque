@@ -1,23 +1,17 @@
 const authReducer = (state={}, action) => {
   switch(action.type){
-    case "AUTH_RESET_ERRORS" : {
-      state = Object.assign({}, state, { messages : [] });
-      break;
-    }
     case "AUTH_CHECK_PENDING":
     case "USERS_CREATE_PENDING":
     case "AUTH_LOGOUT_PENDING" :
     case "AUTH_LOGIN_PENDING" : {
-      state = Object.assign({}, state, { pending : true, messages : {} }, );
+      state = Object.assign({}, state, { pending : true});
       break;
     }
-    
     case "AUTH_LOGOUT_FULFILLED" : {
       state = {
         pending : false,
         authenticated : false,
-        profile : {},
-        messages : action.payload.messages
+        profile : {}
       };
       break;
     }
@@ -27,8 +21,7 @@ const authReducer = (state={}, action) => {
       state={
         pending: false,
         authenticated : true,
-        profile: action.payload.data,
-        messages : action.payload.messages
+        profile: action.payload.data
       };
       break;
     }
@@ -38,7 +31,7 @@ const authReducer = (state={}, action) => {
     case "USERS_CREATE_REJECTED":
     case "AUTH_LOGIN_REJECTED" : {
       state=Object.assign(
-        {}, state, { pending : false, messages : action.payload.messages });
+        {}, state, { pending : false });
       break;
     }
   }

@@ -10,8 +10,10 @@ const flash = require('connect-flash');
 const cookieParser = require('cookie-parser');
 const configPassport = require('./config/passport');
 
+
 const env = require('./config/env');
 const api = require('./api');
+const s3 = require('./s3');
 
 //CREATE//
 var app = express();
@@ -40,7 +42,7 @@ app.use(flash());
 let passport = configPassport.init(app);
 
 //ROUTES//
-app.use('/api', api(passport));
+app.use('/api', api(passport, s3));
 
 // REDIRECT UNKNOWN ROUTES //
 app.get('*', (req, res) => {

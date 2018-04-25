@@ -20,8 +20,7 @@ class CreateUserPage extends Component{
       >
         <h3>Create Account</h3>
         <Form
-          messages={this.props.auth.messages}
-          resetMessages={() => this.props.resetMessages('auth')}
+          messages={this.props.messages}
           submitAction={(args) => this.props.apiActionCreator('users', 'create', [args])}
           submitString={"Create Account"}
           formInputs={[
@@ -88,7 +87,8 @@ class CreateUserPage extends Component{
 
 const mapStateToProps = (state) => {
   return {
-    auth : state.auth
+    auth : state.auth,
+    messages : state.messages
   };
 };
 
@@ -97,9 +97,6 @@ const mapDispatchToProps = (dispatch) => {
     apiActionCreator : (endpoint, operation, args) => {
       dispatch(apiActionCreator(endpoint, operation, args));
     },
-    resetMessages : (reducerName) => {
-      dispatch({type : reducerName.toUpperCase() + "_RESET_MESSAGES"});
-    }
   };
 };
 

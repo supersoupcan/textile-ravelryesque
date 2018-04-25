@@ -9,6 +9,7 @@ import CreateUserPage from './containers/CreateUserPage';
 import SignInPage from './containers/SignInPage';
 import NoPageFoundPage from'./containers/NoPageFoundPage';
 import UserPage from './containers/UserPage';
+import CreatePatternPage from './containers/CreatePatternPage';
 
 import HomePage from './containers/HomePage';
 
@@ -21,7 +22,8 @@ class App extends Component {
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route exact path="/signIn" component={SignInPage}/>
-        <Route exact path="/createUser" component={CreateUserPage}/>
+        <Route exact path="/create/pattern" component={CreatePatternPage} />
+        <Route exact path="/create/user" component={CreateUserPage}/>
         <Route exact path="/users/:userId" component={UserPage}/>
         <Route path="*" component={NoPageFoundPage} />
       </Switch>

@@ -1,21 +1,45 @@
 .container{
   background-color: black;
+  min-height: 40px;
+}
+
+a{
+  text-align: center;
+  vertical-align: middle;
 }
 
 .subContainer{
   margin: auto;
   display: flex;
   justify-content: space-between;
-  border-bottom: 2px solid black;
 }
 
 .itemGroup{
   display: flex;
-  justify-content: space-around;
+  align-items: center;
+}
+
+.leftItemGroup{
+  composes : itemGroup;
+  width: 100%;
 }
 
 .item{
-  margin: 10px;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  white-space: nowrap;
+  margin: 0px 15px;
   color: white;
-  display: block;
+}
+
+.searchBarItem{
+  composes : item;
+  flex: 1;
+}
+
+.pictureItem{
+  display: flex;
+  align-items: center;
+  height: 40px;
 }

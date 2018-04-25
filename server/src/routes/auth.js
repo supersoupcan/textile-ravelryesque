@@ -1,10 +1,13 @@
 const express = require('express');
 
+const multer = require('multer');
+const upload = multer();
+
 module.exports = (passport) => {
   const auth = express.Router();
+  
   auth.post(
-    '/login', 
-    passport.authenticate('local', {
+    '/login', upload.fields([]), passport.authenticate('local', {
       failureFlash : true,
       failureRedirect : "/api/auth/login/failure",
       successRedirect : "/api/auth/login/success"
@@ -23,7 +26,6 @@ module.exports = (passport) => {
   });
 
   auth.get('/login', (req, res, next) => {
-    console.log(res.locals, req.user);
     if(req.user){
       res.locals.success = true;
       res.locals.data = req.user;
@@ -35,7 +37,6 @@ module.exports = (passport) => {
   });
   
   auth.post('/logout', (req, res, next) => {
-    console.log('match');
     req.logout();
     res.locals.success = true;
     next();

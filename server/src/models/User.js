@@ -27,7 +27,11 @@ const UserSchema = new Schema({
   },
   createdAt : {
     type : Date,
-    default : Date.nowi
+    default : Date.now()
+  },
+  imageKey : {
+    type : String,
+    default : "default-picture"
   }
 });
 

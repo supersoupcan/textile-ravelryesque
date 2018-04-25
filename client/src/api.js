@@ -11,8 +11,14 @@ const _api = {
   users : {
     create : (data) => axios.post("/users", data),
     read : (id) => axios.get("/users/" + id),
-    update : (id) => axios.put("/users/" + id),
+    update : (id, data) => axios.put("/users/" + id, data),
     destroy : (id) => axios.delete("/users/" + id)
+  },
+  patterns : {
+    create : (data) => axios.post("/patterns", data),
+    read : (id) => axios.get("/patterns/" + id),
+    update : (id, data) => axios.put("/patterns/" + id, data),
+    destory : (id) => axios.delete("/patterns/" + id) 
   }
 };
   
@@ -52,3 +58,7 @@ export const apiActionCreator = (endpoint, operation, args) => {
     }
   };
 };
+
+export function S3Resource(key){
+  return("https://s3.us-east-2.amazonaws.com/textile-raverlyesque-test/" + key);
+}

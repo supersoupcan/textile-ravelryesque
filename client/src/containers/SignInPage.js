@@ -20,8 +20,7 @@ class SignInPage extends Component{
       >
         <h3>Sign In</h3>
         <Form
-          messages={this.props.auth.messages}
-          resetMessages={() => this.props.resetMessages('auth')}
+          messages={this.props.messages}
           submitAction={(args) => this.props.apiActionCreator('auth', 'login', [args])}
           submitString={"Sign In"}
           formInputs={[
@@ -48,7 +47,8 @@ class SignInPage extends Component{
 
 const mapStateToProps = (state) => {
   return {
-    auth : state.auth
+    auth : state.auth,
+    messages : state.messages
   };
 };
 

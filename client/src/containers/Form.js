@@ -1,49 +1,89 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import uuid4 from 'uuid/v4';
 
 export default class Form extends Component{
   constructor(props){
     super(props);
     
-    const initialState = this.props.formInputs.reduce((result, item, index) => {
+    const formState = this.props.formInputs.reduce((result, item, index) => {
       result[item.name] = "";
       return result;
     }, {});
     
-    this.state = initialState;
+    this.state = {
+      formState,
+      showMessages : false
+    };
     
     this.handleSubmit = this.handleSubmit.bind(this);
     this.formOnChangeHandler = this.formOnChangeHandler.bind(this);
   }
   
-  componentDidMount(){
-    this.props.resetMessages();
-  }
-  
   handleSubmit(e){
     e.preventDefault();
-    this.props.submitAction(this.state);
+    
+    let formData = new FormData();
+    this.props.formInputs.forEach((input) => {
+      if(input.type === 'file'){
+        this.state.formState[input.name].forEach((file) => {
+          formData.append(input.name, file);
+          formData.append(input.name + 'id', uuid4());
+        });
+      }
+      else{
+        formData.append(input.name, this.state.formState[input.name]);
+      }
+    });
+    
+    this.props.submitAction(formData);
   }
   
   formOnChangeHandler(e){
-    this.setState({
-      [e.target.name] : e.target.value
-    });
+    let value;
+    if(e.target.files){
+      value = Array.from(e.target.files);
+    }else{
+      value = e.target.value;
+    }
+    const formState = Object.assign(
+      {}, this.state.formState, {[e.target.name] : value}
+    );
+    const nextState = Object.assign({}, this.state, { formState });
+    
+    this.setState(nextState);
   }
-  
   render(){
+    console.log(this.state);
     return(
       <div>
         <form onSubmit={this.handleSubmit}>
           {this.props.formInputs.map((input, index) => {
             return(
               <div key={index}>
-                <FormInput 
-                  data={input}
-                  onChangeHandler={this.formOnChangeHandler}
-                  parentValue={this.state[input.name]}
-                />
-                <br />
+              {
+                input.type === "file" ? 
+                <div>
+                  <label> {input.title + ":"} </label>
+                  <input
+                    accept={input.accept}
+                    multiple={input.multiple}
+                    name={input.name}
+                    type={input.type} 
+                    onChange={this.formOnChangeHandler}
+                  />
+                </div>
+                :
+                <div>
+                  <input
+                    placeholder={input.title}
+                    name={input.name}
+                    type={input.type} 
+                    onChange={this.formOnChangeHandler}
+                  />
+                </div>
+              }
+              <br />
               </div>
             );
           })}
@@ -61,7 +101,6 @@ export default class Form extends Component{
 Form.propTypes = {
   submitAction : PropTypes.func.isRequired,
   submitString : PropTypes.string,
-  resetMessages : PropTypes.func.isRequired,
   messages : PropTypes.object,
   formInputs : PropTypes.arrayOf(PropTypes.shape({
     name : PropTypes.string.isRequired,
@@ -70,23 +109,10 @@ Form.propTypes = {
   })),
 };
 
-const FormInput = (props) => {
-  const { data, onChangeHandler, parentValue } = props;
-  return(
-    <input 
-      name={data.name}
-      type={data.type} 
-      placeholder={data.title} 
-      onChange={onChangeHandler}
-      value={parentValue}
-    />
-  );
-};
-
 const SubmissionManager = (props) => {
   let errorsList = [];
   props.formInputs.map((input, index) => {
-    const inputTarget = props.state[input.name];
+    const inputTarget = props.state.formState[input.name];
     input.validation.map((rule, index) => {
       let legal = false;
       switch(rule.type){
