@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 const uniqueValidator = require("mongoose-unique-validator");
 const bcrypt = require("bcrypt");
 
+const Rating = require('./Rating');
+
 const UserSchema = new Schema({
   username : {
     type : String,
@@ -59,6 +61,11 @@ UserSchema.methods.validPassword = function(password){
     });
   });
 };
+
+UserSchema.methods.ratedBefore = function(postId){
+  return Rating.findOne({postId : postId, userId : this._id});
+};
+
 
 
 const User = mongoose.model("User", UserSchema);

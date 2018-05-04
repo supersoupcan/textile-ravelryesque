@@ -14,7 +14,6 @@ users.get('/:userID', async (req, res, next) => {
     const user = await User.findById(req.params.userID, { passwordHash : false, __v : false });
     res.locals.success = true;
     res.locals.data = user;
-    console.log(user);
     
   }catch(err){
     req.flash('error', err);

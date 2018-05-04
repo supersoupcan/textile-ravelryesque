@@ -7,28 +7,60 @@ import appStyles from '../App.css';
 import styles from './NavBar.css';
 
 import FA from 'react-fontawesome';
-
-
-
 import { S3Resource } from '../api';
 
 import { Link } from 'react-router-dom';
 
 export default class NavBar extends Component{
+  constructor(props){
+    super(props);
+    
+    this.state = {
+      activeDropBox : ''
+    };
+  }
+  
+  openDropDown(id){
+    if(this.state.activeDropBox === id){
+      this.setState({
+        activeDropBox : ''
+      });
+    }else{
+      this.setState({
+        activeDropBox : id
+      });
+    }
+  }
+  
   render(){
     return(
       <div className={styles.container}>
         <div className={appStyles.borders}>
           <div className={styles.subContainer}>
             <div className={styles.leftItemGroup}>
-              <Link className={styles.item} to="/">
+              <Link className={styles.itemLeft} to="/">
                 (Logo)
               </Link>
-              <Link className={styles.item} to="/" >
-                Patterns
-              </Link>
               <div className={styles.searchBarItem}> 
-                <SearchBar />
+                <SearchBar 
+                  dropDownId='searchType'
+                  activeDropBox={this.state.activeDropBox}
+                  openDropDown={(id) => this.openDropDown(id)}
+                  searchTypes={[
+                    {
+                      value : "all",
+                      label : "All"
+                    },
+                    {
+                      value : "patterns",
+                      label : "Patterns"
+                    },
+                    {
+                      value : "users",
+                      label: 'Users'
+                    }
+                  ]}
+                />
               </div>
             </div>
             {!this.props.auth.authenticated ?
@@ -37,7 +69,7 @@ export default class NavBar extends Component{
                   Sign In
                 </Link>
                 <div className={styles.item}> or </div>
-                <Link className={styles.item} to="/create/user">
+                <Link className={styles.itemRight} to="/create/user">
                   Create an Account
                 </Link>
                 
@@ -46,10 +78,13 @@ export default class NavBar extends Component{
               <div className={styles.itemGroup}>
                 <div className={styles.item}>
                   <DropDown
+                    id='stuff'
+                    alertParent={(id) => this.openDropDown(id)}
+                    activeDropBox={this.state.activeDropBox}
                     items={[
                       {
                         type : 'link',
-                        title : "Create Pattern",
+                        label : "Create Pattern",
                         to : "/create/pattern",
                       },
                     ]}
@@ -61,18 +96,22 @@ export default class NavBar extends Component{
                     />
                   </DropDown>
                 </div>
-                <div className={styles.items}>
+                <div className={styles.itemsRight}>
                   <DropDown
+                    left="true"
+                    id='profile'
+                    alertParent={(id) => this.openDropDown(id)}
+                    activeDropBox={this.state.activeDropBox}
                     items={[
                       {
                         type : 'link',
-                        title : "Your Profile",
+                        label : "Your Profile",
                         to : "/users/" + this.props.auth.profile._id,
                       },
                       {
                         type : 'function',
                         onClick : (() => this.props.logout()),
-                        title : "Logout"
+                        label : "Logout"
                       }
                     ]}
                   >

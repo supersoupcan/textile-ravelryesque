@@ -3,18 +3,16 @@ const Schema = mongoose.Schema;
 const uniqueValidator = require("mongoose-unique-validator");
 
 const PatternSchema = new Schema({
-  userid : { 
+  userId : { 
     type: String,
     required: true
-  },
-  username : { 
-    type: String,
-    required: true,
   },
   title : {
     type : String,
     required: true,
   },
+  rateCount : 0,
+  rateValue: 0,
   images : [
     {
       uuid : {
@@ -30,7 +28,11 @@ const PatternSchema = new Schema({
         required : true
       }
     }
-  ]
+  ],
+  createdAt : {
+    type : Date,
+    default : Date.now()
+  },
 });
 
 const Pattern = mongoose.model("Pattern", PatternSchema);

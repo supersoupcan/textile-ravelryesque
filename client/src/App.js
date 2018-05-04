@@ -5,27 +5,61 @@ import { connect } from 'react-redux';
 
 import { apiActionCreator } from './api';
 
-import CreateUserPage from './containers/CreateUserPage';
-import SignInPage from './containers/SignInPage';
-import NoPageFoundPage from'./containers/NoPageFoundPage';
-import UserPage from './containers/UserPage';
-import CreatePatternPage from './containers/CreatePatternPage';
+import Page from './components/Page';
 
-import HomePage from './containers/HomePage';
+import Home from './containers/Home';
+import CreatePattern from './containers/CreatePattern';
+import CreateUser from './containers/CreateUser';
+import SignIn from './containers/SignIn';
+import User from './containers/User';
+import NoPageFound from './containers/NoPageFound';
 
 class App extends Component {
   componentDidMount(){
     this.props.apiActionCreator('auth', 'check', []);
   }
+  
+  createPage(title, children){
+    return(
+      () => (
+        <Page 
+          title={title}
+          auth={this.props.auth}
+          apiActionCreator={this.props.apiActionCreator}
+        >
+          { children }
+        </Page>
+      )
+    );
+  }
+  
   render(){
     return(
       <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route exact path="/signIn" component={SignInPage}/>
-        <Route exact path="/create/pattern" component={CreatePatternPage} />
-        <Route exact path="/create/user" component={CreateUserPage}/>
-        <Route exact path="/users/:userId" component={UserPage}/>
-        <Route path="*" component={NoPageFoundPage} />
+        <Route 
+          exact path="/"
+          render={(props) => this.createPage("Home", <Home {...props} />)()}
+        />
+        <Route 
+          exact path="/signIn"
+          render={(props) => this.createPage("Sign In", <SignIn {...props} />)()}
+        />
+        <Route 
+          exact path="/create/pattern"
+          render={(props) => this.createPage("Create Pattern", <CreatePattern {...props} />)()}
+        />
+          <Route 
+          exact path="/create/account"
+          render={(props) => this.createPage("Create Account", <CreateUser {...props} />)()}
+        />
+        <Route 
+          exact path="/users/:id/"
+          render={(props) => this.createPage("Account", <User {...props} />)()}
+        />
+        <Route 
+          exact path="/404"
+          render={(props) => this.createPage("404", <NoPageFound {...props} />)()}
+        />
       </Switch>
     );
   }
@@ -39,4 +73,34 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(state => ({}), mapDispatchToProps)(App);
+const mapStateToProps = (state) => {
+  return {
+    auth : state.auth,
+    messages : state.messages,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
+
+/*
+<Route 
+            exact path="/signIn" 
+            render={this.createPage("SignIn", <SignIn />)}
+          />
+          <Route 
+            exact path="/create/pattern" 
+            render={this.createPage("Create Pattern", <CreatePattern />)}
+          />
+          <Route 
+            exact path="/create/user"
+            render={this.createPage("Create User", <CreateUser/>)}
+          />
+          <Route
+            exact path="/users/:userId" 
+            render={this.createPage("User", <User />)}
+          />
+          <Route 
+            path="*" 
+            render={this.createPage("404", <NoPageFound />)}
+          />
+*/

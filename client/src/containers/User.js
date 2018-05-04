@@ -1,46 +1,63 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { S3Resource } from '../api';
-
+import { S3Resource, api } from '../api';
 import axios from 'axios';
 
 
 export default class User extends Component{
   constructor(props){
     super(props);
-    this.state = {
-      user : this.props.data
-    };
-  };
-  
+    
+    let accountData;
+    const isMyAccount = (() => {
+      if(this.props.authenticated){
+        if(this.props.match.params.id === this.props.auth.profile.id){
+          return true;
+        }else{
+          return false;
+        }
+      }else{
+        return false;
+      }
+    })();
+    
+    if(isMyAccount){
+      accountData={
+        isMyAccount : false,
+        data : this.props.auth.profilem
+      };
+    }else{
+      accountData={
+        isMyAccount : true,
+        data : null
+      };
+    }
+    this.state = Object.assign({}, { accountData }, { error : false});
+  }
+
   async componentDidMount(){
-    if(!this.props.data){
+    if(!this.isMyAccount){
       try{
-        const user = await axios.get('/users/' + this.props.id);
-        this.setState({user});
+        const response = await api.users.read(this.props.match.params.id);
+        this.setState({
+          data : response.data
+        });
       }
       catch(err){
         console.log(err);
+        //REDIRECT to ERROR PAGE
+        this.setState({error : true});
       }
     }
   }
-  
+ 
   render(){
-    if(this.state.user){
-      return(
-        <div>
-          <img 
-            src={S3Resource(this.state.user.imageKey)}
-          />
-          <div>{this.state.user.username}</div>
-        </div>
-      );
-    }else{
-      return(
-        <div></div>
-      );
-    }
+    return(
+      <div>
+        {this.props.title}
+      </div>
+    );
   }
 }
 

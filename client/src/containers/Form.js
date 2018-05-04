@@ -25,10 +25,10 @@ export default class Form extends Component{
     
     let formData = new FormData();
     this.props.formInputs.forEach((input) => {
-      if(input.type === 'file'){
+      if(input.type === 'file' && this.state.formState[input.name]){
         this.state.formState[input.name].forEach((file) => {
           formData.append(input.name, file);
-          formData.append(input.name + 'id', uuid4());
+          formData.append(input.name + 'ids', uuid4());
         });
       }
       else{
@@ -54,7 +54,6 @@ export default class Form extends Component{
     this.setState(nextState);
   }
   render(){
-    console.log(this.state);
     return(
       <div>
         <form onSubmit={this.handleSubmit}>

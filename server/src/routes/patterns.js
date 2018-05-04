@@ -5,6 +5,17 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const upload = multer();
 
+const fileUploadFields = [
+  {
+    name: "images",
+    maxCount: 10 
+  },
+  {
+    name: "pdfs",
+    maxCount: 1
+  }
+];
+
 module.exports = (s3) => {
   const patterns = express.Router();
   
@@ -20,54 +31,64 @@ module.exports = (s3) => {
     next();
   });
 
-  patterns.post('/', upload.array('photos', 12), async (req, res, next) => {
+  patterns.post('/', upload.fields(fileUploadFields), async (req, res, next) => {
     try{
       const basePattern = new Pattern({
-        userid : req.user._id,
+        userId : req.user._id,
         username : req.user.username,
         title : req.body.title,
       });
-      
+
       const savedBasePattern = await basePattern.save();
-      //add uploaded resources
+      const entryId = savedBasePattern._id;
       
-      let ids = req.body.photosid;
-      if(!Array.isArray(ids)){
-        ids = ids.split('');
-      }
+      const databaseLinks = {};
       
-      const photos = req.files.map((file, index) => {
-        async () => {
-          try{
-            await s3.putObject({
+      const uploadsPromises = fileUploadFields.map(async (field, index) => {
+        let ids = req.body[field.name + "ids"];
+        if(!Array.isArray(ids)){
+          ids = [ids];
+        }
+        
+        console.log(ids);
+        
+        databaseLinks[field.name] = [];
+        
+        const fieldPromises = req.files[field.name].map((file, index) => {
+          const tag ="parentType=Pattern&parentId=" + entryId;
+          databaseLinks[field.name].push({uuid : ids[index]});
+          return(
+            s3.putObject({
               Bucket : "textile-raverlyesque-test",
               Body : file.buffer,
-              Key : ids[index],
+              Key : 'uploads/' + ids[index],
               ContentType: file.mimetype,
-            })
-          }
-          catch(err){
-            console.log(err);
-            return;
-          }
+              ACL : "public-read",
+              // Tagging : tag
+              // *Tagging costs 1 center per 10,000 objects*
+            }).promise()
+          );
+        });
+        
+        try{
+          return await Promise.all(fieldPromises);
+        }
+        catch(err){
+          throw err;
+          //TODO: return failure indexes, so server can remove S3 assets;
         }
       });
       
+      console.log(databaseLinks);
       
-      //await s3.addObject(req.files[0], req.body['photosid'][0]);
-      
-      /*
-      Object.keys(req.files).forEach(fileType => {
-        s3.addAllObjects(
-          'pattern/' + basePattern.id + '/' + fileType),
-          req.files[fileType]
-      });
-      */
+      await Promise.all(uploadsPromises);
+      await Pattern.findByIdAndUpdate(entryId, { $set : databaseLinks });
       
       res.locals.success = true;
       res.locals.data = {};
       
     }catch(err){
+      //if failure, delete 
       console.log(err);
       req.flash('error', err);
       res.locals.success = false;

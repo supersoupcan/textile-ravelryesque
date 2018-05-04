@@ -21,7 +21,6 @@
   align-items: center;
   height: 30px;
   padding: 0px 10px;
-  border-radius: 5px 0px 0px 5px;
 }
 
 .searchButton{
@@ -30,15 +29,26 @@
   border-radius: 0px 5px 5px 0px;
 }
 
+.searchSelect{
+  composes: item;
+  background: lightgrey;
+  border-radius: 5px 0px 0px 5px;
+}
+
 .searchButton:hover{
   background-color: yellow;
 }
 
-input{
-  width: 50px;
+.searchField{
+  composes : item;
+  width: 100px;
   flex-grow: 1;
-  flex-shrink: 1;
   font-size: 15px;
   border: 0px solid black;
   padding: 0px;
+  margin: 0px 10px;
+}
+
+input{
+  
 }

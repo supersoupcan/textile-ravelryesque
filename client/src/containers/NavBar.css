@@ -1,5 +1,6 @@
 .container{
   background-color: black;
+  color: white;
   min-height: 40px;
 }
 
@@ -30,7 +31,16 @@ a{
   height: 40px;
   white-space: nowrap;
   margin: 0px 15px;
-  color: white;
+}
+
+.itemRight{
+  composes: item;
+  margin-right: 5px;
+}
+
+.itemLeft{
+  composes: item;
+  margin-left: 5px;
 }
 
 .searchBarItem{

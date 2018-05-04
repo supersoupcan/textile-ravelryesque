@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.baseURL = '/api';
 
-const _api = {
+export const api = {
   auth : {
     login : (data) => axios.post('/auth/login', data),
     logout : () => axios.post('/auth/logout'),
@@ -22,9 +22,9 @@ const _api = {
   }
 };
   
-export const apiActionCreator = (endpoint, operation, args) => {
-  const _type = endpoint.toUpperCase() + "_" + operation.toUpperCase();
-  const _apiCall = _api[endpoint][operation];
+export const apiActionCreator = (apiEndpoint, operation, args) => {
+  const _type = apiEndpoint.toUpperCase() + "_" + operation.toUpperCase();
+  const _apiCall = api[apiEndpoint][operation];
   const _promise = new Promise(
     async (resolve, reject) => {
       try{

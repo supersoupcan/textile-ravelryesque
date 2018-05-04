@@ -5,19 +5,16 @@ import { Link } from 'react-router-dom';
 
 import FA from 'react-fontawesome';
 
+import PropTypes from 'prop-types';
+
 export class DropDown extends Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      active : false
-    };
-  }
   render(){
+    const active = this.props.activeDropBox === this.props.id;
     return(
       <div className={styles.dropDown}>
         <div
           className={styles.dropDownBtn}
-          onClick={() => this.setState({active : !this.state.active})}
+          onClick={() => this.props.alertParent(this.props.id)}
         >
           <div className={styles.childrenHolder}>
             <div className={styles.children}>
@@ -26,16 +23,16 @@ export class DropDown extends Component{
             <FA
               className={styles.children}
               name='angle-down'
-              rotate={this.state.active ? null : 180}
+              rotate={active ? null : 180}
             />
           </div>
         </div>
-        {this.state.active && 
-          <div className={styles.dropDownContent}>
+        { active && 
+          <div className={this.props.left ? styles.dropDownContent : styles.left}>
             {this.props.items.map((item, index) => {
               return(
                 <div 
-                  key={item.title + index}
+                  key={item.label + index}
                   className={styles.dropDownItem}
                 >
                   {(item.type === 'link') && 
@@ -43,14 +40,14 @@ export class DropDown extends Component{
                       style={{textAlign: "right"}}
                       to={item.to}
                     >
-                      {item.title}
+                      {item.label}
                     </Link>
                   }
                   {(item.type === 'function') && 
                     <div
                       onClick={() => item.onClick()}
                     >
-                      <a>{item.title}</a>
+                      <a>{item.label}</a>
                     </div>
                   }
                 </div>
@@ -62,3 +59,14 @@ export class DropDown extends Component{
     );
   }
 }
+
+DropDown.propTypes = {
+  items : PropTypes.arrayOf(PropTypes.shape({
+    type : PropTypes.string.isRequired,
+    onClick : PropTypes.func,
+    to : PropTypes.string,
+  })),
+  alertParent : PropTypes.func.isRequired,
+  id : PropTypes.string.isRequired,
+  activeDropBox : PropTypes.string.isRequired,
+};
